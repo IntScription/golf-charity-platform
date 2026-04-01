@@ -1,6 +1,6 @@
 import Stripe from "stripe";
 import { headers } from "next/headers";
-import { stripe } from "@/lib/stripe";
+import { getStripe } from "@/lib/stripe";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 function mapStripeStatus(
@@ -13,6 +13,7 @@ function mapStripeStatus(
 }
 
 export async function POST(req: Request) {
+  const stripe = getStripe();
   const body = await req.text();
   const signature = (await headers()).get("stripe-signature");
 
@@ -46,7 +47,6 @@ export async function POST(req: Request) {
 
     if (userId && planId && subscriptionId) {
       const subscription = await stripe.subscriptions.retrieve(subscriptionId);
-
       const item = subscription.items.data[0];
 
       await supabase.from("subscriptions").upsert(
@@ -59,8 +59,12 @@ export async function POST(req: Request) {
               : subscription.customer?.id,
           stripe_subscription_id: subscription.id,
           status: mapStripeStatus(subscription.status),
-          current_period_start: new Date(item.current_period_start * 1000).toISOString(),
-          current_period_end: new Date(item.current_period_end * 1000).toISOString(),
+          current_period_start: new Date(
+            item.current_period_start * 1000,
+          ).toISOString(),
+          current_period_end: new Date(
+            item.current_period_end * 1000,
+          ).toISOString(),
           renewal_date: new Date(item.current_period_end * 1000).toISOString(),
         },
         {
@@ -81,8 +85,12 @@ export async function POST(req: Request) {
       .from("subscriptions")
       .update({
         status: mapStripeStatus(subscription.status),
-        current_period_start: new Date(item.current_period_start * 1000).toISOString(),
-        current_period_end: new Date(item.current_period_end * 1000).toISOString(),
+        current_period_start: new Date(
+          item.current_period_start * 1000,
+        ).toISOString(),
+        current_period_end: new Date(
+          item.current_period_end * 1000,
+        ).toISOString(),
         renewal_date: new Date(item.current_period_end * 1000).toISOString(),
       })
       .eq("stripe_subscription_id", subscription.id);

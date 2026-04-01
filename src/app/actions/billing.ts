@@ -2,10 +2,11 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { stripe } from "@/lib/stripe";
+import { getStripe } from "@/lib/stripe";
 
 export async function createCheckoutSession(formData: FormData): Promise<void> {
   const supabase = await createClient();
+  const stripe = getStripe();
 
   const {
     data: { user },
@@ -27,6 +28,12 @@ export async function createCheckoutSession(formData: FormData): Promise<void> {
     redirect("/pricing?error=Plan is not configured for Stripe");
   }
 
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL;
+
+  if (!appUrl) {
+    redirect("/pricing?error=Missing NEXT_PUBLIC_APP_URL");
+  }
+
   const session = await stripe.checkout.sessions.create({
     mode: "subscription",
     customer_email: user.email,
@@ -36,8 +43,8 @@ export async function createCheckoutSession(formData: FormData): Promise<void> {
         quantity: 1,
       },
     ],
-    success_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?success=subscription-started`,
-    cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/pricing?error=checkout-cancelled`,
+    success_url: `${appUrl}/dashboard?success=subscription-started`,
+    cancel_url: `${appUrl}/pricing?error=checkout-cancelled`,
     metadata: {
       user_id: user.id,
       plan_id: plan.id,
