@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { LogoutButton } from "@/components/shared/logout-button";
 
 type Role = "subscriber" | "admin" | null;
 
@@ -82,11 +83,7 @@ export function Navbar() {
 
         <div className="flex items-center gap-3">
           {isLoggedIn ? (
-            <form action="/auth/signout" method="post">
-              <button className="rounded-full border border-white/15 px-4 py-2 text-sm text-white/80 hover:text-white">
-                Logout
-              </button>
-            </form>
+            <LogoutButton />
           ) : (
             <>
               <Link

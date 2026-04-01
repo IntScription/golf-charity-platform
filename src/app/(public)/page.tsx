@@ -12,7 +12,11 @@ export default async function HomePage() {
   } = await supabase.auth.getUser();
 
   const { data: profile } = user
-    ? await supabase.from("profiles").select("full_name, role").eq("id", user.id).single()
+    ? await supabase
+      .from("profiles")
+      .select("full_name, role")
+      .eq("id", user.id)
+      .single()
     : { data: null };
 
   return (
