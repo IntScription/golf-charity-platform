@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import {
@@ -65,20 +66,28 @@ export default async function DashboardPage({
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-12">
-      <div className="mb-8">
-        <h1 className="text-4xl font-semibold">
-          Welcome {profile?.full_name || "User"}
-        </h1>
-        <p className="mt-3 text-white/70">
-          Manage your charity selection, latest golf scores, and subscription
-          info.
-        </p>
+      <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div>
+          <h1 className="text-4xl font-semibold">
+            Welcome {profile?.full_name || "User"}
+          </h1>
+          <p className="mt-3 text-white/70">
+            Manage your charity selection, latest golf scores, winnings, and subscription info.
+          </p>
+        </div>
+
+        <Link
+          href="/dashboard/winnings"
+          className="rounded-full border border-white/15 px-5 py-3 text-white/85 hover:text-white"
+        >
+          View Winnings
+        </Link>
       </div>
 
       {!hasAccess ? (
         <div className="mb-6 rounded-2xl border border-yellow-500/30 bg-yellow-500/10 p-4 text-sm text-yellow-200">
-          Your subscription is not active. Please subscribe to unlock score
-          entry, charity participation, and draw eligibility.
+          Your subscription is not active. Please subscribe to unlock score entry,
+          charity participation, and draw eligibility.
         </div>
       ) : null}
 

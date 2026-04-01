@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import {
@@ -53,11 +54,20 @@ export default async function AdminPage({
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-12">
-      <div className="mb-8">
-        <h1 className="text-4xl font-semibold">Admin Dashboard</h1>
-        <p className="mt-3 text-white/70">
-          Manage users, charities, draws, winners, and reporting.
-        </p>
+      <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div>
+          <h1 className="text-4xl font-semibold">Admin Dashboard</h1>
+          <p className="mt-3 text-white/70">
+            Manage users, charities, draws, winners, and reporting.
+          </p>
+        </div>
+
+        <Link
+          href="/admin/winners"
+          className="rounded-full border border-white/15 px-5 py-3 text-white/85 hover:text-white"
+        >
+          Open Winner Claims
+        </Link>
       </div>
 
       {error ? (
